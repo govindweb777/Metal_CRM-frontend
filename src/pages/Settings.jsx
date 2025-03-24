@@ -1,46 +1,49 @@
 import React, { useEffect, useState } from "react";
-import { Eye } from "lucide-react";
+import { ConstructionIcon, Eye } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const Settings = () => {
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-    accountType: "",
-  });
-
+  const [user, setUser] = useState(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+
   const token = localStorage.getItem("token");
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
+  // Fetch user details
   useEffect(() => {
     const fetchUser = async () => {
       if (!token) return;
+
       try {
-        const response = await axios.get(`${BASE_URL}/api/v1/auth/getUserDetails`, {
-          headers: { Authorization: `Bearer ${token}` },
+        const response = await axios.get(`${BASE_URL}/api/v1/auth/getUser`, {
+          headers: { Authorization: `${token}` }, // Fixed header format
         });
-        setUser(response.data.data);
-        console.log(response.data.data);
+        console.log("response", response.data);
+        setUser(response.data);
       } catch (error) {
         toast.error(error.response?.data?.message || "Failed to fetch user details");
       }
     };
+
     fetchUser();
   }, [token]);
 
+  // Handle password change
   const handlePasswordChange = async (e) => {
     e.preventDefault();
+    if (!user) return;
+
     try {
       await axios.post(
-        `${BASE_URL}/api/v1/auth/changePassword`,
+        `${BASE_URL}/api/v1/auth/change-password`,
         { email: user.email, oldPassword: currentPassword, newPassword },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `${token}` } }
       );
+
       toast.success("Password changed successfully!");
       setCurrentPassword("");
       setNewPassword("");
@@ -49,8 +52,13 @@ const Settings = () => {
     }
   };
 
+  if (!user) {
+    return <p className="text-center text-gray-600">Loading user data...</p>;
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6 text-black">
+      {console.log("user iiii", user)}
       {/* Profile Information Section */}
       <div className="bg-gray-300 rounded-lg p-6">
         <h2 className="text-[#5A6ACF] text-xl font-semibold mb-6">Profile Information</h2>
@@ -59,7 +67,7 @@ const Settings = () => {
             <label className="block text-black mb-2">Full Name</label>
             <input
               type="text"
-              value={user.name}
+              value={user?.name || ""}
               disabled
               className="w-full p-3 bg-white text-black rounded-md border border-gray-700"
             />
@@ -68,7 +76,7 @@ const Settings = () => {
             <label className="block text-black mb-2">Email</label>
             <input
               type="email"
-              value={user.email}
+              value={user?.email || ""}
               disabled
               className="w-full p-3 bg-white text-black rounded-md border border-gray-700"
             />
@@ -77,7 +85,7 @@ const Settings = () => {
             <label className="block text-black mb-2">Account Type</label>
             <input
               type="text"
-              value={user.accountType}
+              value={user?.accountType || ""}
               disabled
               className="w-full p-3 bg-white text-black rounded-md border border-gray-700"
             />
@@ -85,7 +93,7 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* Password Section */}
+      {/* Password Change Section */}
       <form onSubmit={handlePasswordChange} className="bg-gray-300 rounded-lg p-6">
         <h2 className="text-[#5A6ACF] text-xl font-semibold mb-6">Change Password</h2>
         <div className="space-y-6">
