@@ -32,24 +32,23 @@ const Sidebar = () => {
     ],
     Admin: [
       { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
-      { name: 'Leads', icon: UserPlus, path: '/leads' },
-      { name: 'Users', icon: Users, path: '/users' },
+      { name: 'Orders', icon: FileText, path: '/orders' },
+      { name: 'Leads', icon: UserPlus, path: '/leads' },  
+      { name: 'Customers', icon: Contact2, path: '/customers' },
+      { name: 'Gallery', icon: Image, path: '/gallery' },
+      { name: 'Work Queue', icon: ListTodo, path: '/work-queue' },
+      { name: 'Financial', icon: DollarSign, path: '/financial' }
+    ],
+    Graphics: [
       { name: 'Orders', icon: FileText, path: '/orders' },
       { name: 'Customers', icon: Contact2, path: '/customers' },
       { name: 'Gallery', icon: Image, path: '/gallery' },
       { name: 'Work Queue', icon: ListTodo, path: '/work-queue' }
     ],
-    Graphics: [
-      { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
-      { name: 'Orders', icon: FileText, path: '/orders' },
-      { name: 'Gallery', icon: Image, path: '/gallery' }
-    ],
     Display: [
-      { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
       { name: 'Work Queue', icon: ListTodo, path: '/work-queue' }
     ],
     Accounts: [
-      { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
       { name: 'Orders', icon: FileText, path: '/orders' },
       { name: 'Accounts', icon: DollarSign, path: '/accounts' }
     ]
@@ -63,11 +62,12 @@ const Sidebar = () => {
     navigate('/login');
   };
 
+
   return (
     <div className="w-64 bg-gray-900 shadow-lg h-screen flex flex-col justify-between">
       <div>
         <div className="h-16 flex items-center justify-center border-b border-gray-700">
-          <h1 className="text-2xl font-bold text-indigo-400">Admin Panel</h1>
+          <h1 className="text-2xl font-bold text-indigo-400">{userInfo}</h1>
         </div>
         <nav className="mt-6">
           <div className="px-4 space-y-2">

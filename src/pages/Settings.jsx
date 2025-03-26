@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ConstructionIcon, Eye } from "lucide-react";
+import { ConstructionIcon, Eye, KeyRound, UserCircle, ShieldCheck } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -13,37 +13,30 @@ const Settings = () => {
   const token = localStorage.getItem("token");
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-  // Fetch user details
   useEffect(() => {
     const fetchUser = async () => {
       if (!token) return;
-
       try {
         const response = await axios.get(`${BASE_URL}/api/v1/auth/getUser`, {
-          headers: { Authorization: `${token}` }, // Fixed header format
+          headers: { Authorization: `${token}` },
         });
-        console.log("response", response.data);
         setUser(response.data);
       } catch (error) {
         toast.error(error.response?.data?.message || "Failed to fetch user details");
       }
     };
-
     fetchUser();
   }, [token]);
 
-  // Handle password change
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     if (!user) return;
-
     try {
       await axios.post(
         `${BASE_URL}/api/v1/auth/change-password`,
         { email: user.email, oldPassword: currentPassword, newPassword },
         { headers: { Authorization: `${token}` } }
       );
-
       toast.success("Password changed successfully!");
       setCurrentPassword("");
       setNewPassword("");
@@ -53,93 +46,71 @@ const Settings = () => {
   };
 
   if (!user) {
-    return <p className="text-center text-gray-600">Loading user data...</p>;
+    return (
+      <div className="flex justify-center items-center h-full min-h-[300px]">
+        <div className="animate-pulse flex space-x-4">
+          <div className="rounded-full bg-gray-300 h-12 w-12"></div>
+          <div className="flex-1 space-y-4 py-1">
+            <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+            <div className="space-y-3">
+              <div className="h-4 bg-gray-300 rounded"></div>
+              <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6 text-black">
-      {console.log("user iiii", user)}
-      {/* Profile Information Section */}
-      <div className="bg-gray-300 rounded-lg p-6">
-        <h2 className="text-[#5A6ACF] text-xl font-semibold mb-6">Profile Information</h2>
+    <div className="max-w-4xl mx-auto p-6 space-y-6 min-h-screen">
+      <div className="bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
+        <div className="flex items-center mb-6">
+          <UserCircle className="w-8 h-8 text-[#5A6ACF] mr-3" />
+          <h2 className="text-[#5A6ACF] text-2xl font-bold">Profile Information</h2>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-black mb-2">Full Name</label>
-            <input
-              type="text"
-              value={user?.name || ""}
-              disabled
-              className="w-full p-3 bg-white text-black rounded-md border border-gray-700"
-            />
+            <label className="block text-gray-600 mb-2 flex items-center">
+              <UserCircle className="w-5 h-5 text-gray-500" />
+              <span className="ml-2">Full Name</span>
+            </label>
+            <input type="text" value={user?.name || ""} disabled className="w-full p-3 bg-gray-100 rounded-lg" />
           </div>
           <div>
-            <label className="block text-black mb-2">Email</label>
-            <input
-              type="email"
-              value={user?.email || ""}
-              disabled
-              className="w-full p-3 bg-white text-black rounded-md border border-gray-700"
-            />
+            <label className="block text-gray-600 mb-2 flex items-center">
+              <KeyRound className="w-5 h-5 text-gray-500" />
+              <span className="ml-2">Email</span>
+            </label>
+            <input type="text" value={user?.email || ""} disabled className="w-full p-3 bg-gray-100 rounded-lg" />
           </div>
           <div>
-            <label className="block text-black mb-2">Account Type</label>
-            <input
-              type="text"
-              value={user?.accountType || ""}
-              disabled
-              className="w-full p-3 bg-white text-black rounded-md border border-gray-700"
-            />
+            <label className="block text-gray-600 mb-2 flex items-center">
+              <ShieldCheck className="w-5 h-5 text-gray-500" />
+              <span className="ml-2">Account Type</span>
+            </label>
+            <input type="text" value={user?.accountType || ""} disabled className="w-full p-3 bg-gray-100 rounded-lg" />
           </div>
         </div>
       </div>
 
-      {/* Password Change Section */}
-      <form onSubmit={handlePasswordChange} className="bg-gray-300 rounded-lg p-6">
-        <h2 className="text-[#5A6ACF] text-xl font-semibold mb-6">Change Password</h2>
+      <form onSubmit={handlePasswordChange} className="bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
+        <div className="flex items-center mb-6">
+          <KeyRound className="w-8 h-8 text-[#5A6ACF] mr-3" />
+          <h2 className="text-[#5A6ACF] text-2xl font-bold">Change Password</h2>
+        </div>
         <div className="space-y-6">
           <div>
-            <label className="block text-black mb-2">Current Password</label>
-            <div className="relative">
-              <input
-                type={showCurrentPassword ? "text" : "password"}
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full p-3 bg-white text-black rounded-md border border-gray-700 pr-10"
-                placeholder="Enter Current Password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
-              >
-                <Eye className="w-5 h-5 text-gray-400" />
-              </button>
-            </div>
+            <label className="block text-gray-600 mb-2">Current Password</label>
+            <input type={showCurrentPassword ? "text" : "password"} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="w-full p-3 bg-gray-100 rounded-lg" />
           </div>
           <div>
-            <label className="block text-black mb-2">New Password</label>
-            <div className="relative">
-              <input
-                type={showNewPassword ? "text" : "password"}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full p-3 bg-white text-black rounded-md border border-gray-700 pr-10"
-                placeholder="Enter New Password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
-              >
-                <Eye className="w-5 h-5 text-gray-400" />
-              </button>
-            </div>
+            <label className="block text-gray-600 mb-2">New Password</label>
+            <input type={showNewPassword ? "text" : "password"} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full p-3 bg-gray-100 rounded-lg" />
           </div>
         </div>
-        <div className="mt-6 flex justify-end space-x-3">
-          <button type="submit" className="px-6 py-2 bg-yellow-500 text-black rounded-md hover:bg-yellow-400 transition">
-            Update Password
-          </button>
+        <div className="mt-6 flex justify-end">
+          <button type="submit" className="px-8 py-3 bg-[#5A6ACF] text-white rounded-lg">Update Password</button>
         </div>
       </form>
     </div>

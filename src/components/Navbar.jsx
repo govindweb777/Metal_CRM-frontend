@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BellIcon, UserCircleIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { BellIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 function Navbar() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user'));
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const token = localStorage.getItem("token");
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  
   const [notifications, setNotifications] = useState([
     { id: 1, text: 'New lead assigned to you', time: '10m ago' },
     { id: 2, text: 'Meeting with Client XYZ', time: '1h ago' },
@@ -13,11 +17,25 @@ function Navbar() {
   ]);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
+  // Fetch user details
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!token) return;
+
+      try {
+        const response = await axios.get(`${BASE_URL}/api/v1/auth/getUser`, {
+          headers: { Authorization: `${token}` },
+        });
+        setUser(response.data);
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to fetch user details");
+      }
+    };
+
+    fetchUser();
+  }, [token]);
+
+  const firstLetter = user?.name ? user.name.charAt(0).toUpperCase() : '?';
 
   return (
     <nav className="bg-white shadow-lg">
@@ -64,28 +82,9 @@ function Navbar() {
             </button>
             
             <div className="relative">
-              <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center px-3 py-2 rounded-md text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors duration-200 focus:outline-none"
-              >
-                <UserCircleIcon className="h-8 w-8 mr-2" />
-                <span>{user?.name || 'Govind'}</span>
-                <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {isDropdownOpen && (
-                <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
-                  <a href="#profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</a>
-                  <a href="#settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-gray-700 font-bold text-lg cursor-pointer">
+                {firstLetter}
+              </div>
             </div>
           </div>
         </div>
