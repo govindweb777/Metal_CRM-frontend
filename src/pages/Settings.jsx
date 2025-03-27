@@ -75,7 +75,12 @@ const Settings = () => {
               <UserCircle className="w-5 h-5 text-gray-500" />
               <span className="ml-2">Full Name</span>
             </label>
-            <input type="text" value={user?.name || ""} disabled className="w-full p-3 bg-gray-100 rounded-lg" />
+            <input 
+              type="text" 
+              value={`${user?.firstName || ''} ${user?.lastName || ''}`} 
+              disabled 
+              className="w-full p-3 bg-gray-100 rounded-lg" 
+            />
           </div>
           <div>
             <label className="block text-gray-600 mb-2 flex items-center">

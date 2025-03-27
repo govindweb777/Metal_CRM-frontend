@@ -35,7 +35,7 @@ function Navbar() {
     fetchUser();
   }, [token]);
 
-  const firstLetter = user?.name ? user.name.charAt(0).toUpperCase() : '?';
+  const firstLetter = user?.firstName ? user.firstName.charAt(0).toUpperCase() : '?';
 
   return (
     <nav className="bg-white shadow-lg">

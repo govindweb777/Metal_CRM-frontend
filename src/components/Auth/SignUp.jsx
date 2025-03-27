@@ -176,7 +176,8 @@ const Signup = () => {
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     accountType: "Display" // Default value from enum in backend
@@ -239,19 +240,36 @@ const SignupForm = () => {
         )}
         
         <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Name Field (matches 'name' in backend) */}
+          {/* First Name Field */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium">
-              Full Name
+            <label htmlFor="firstName" className="block text-sm font-medium">
+              First Name
             </label>
             <input
               type="text"
-              id="name"
-              name="name"
+              id="firstName"
+              name="firstName"
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Enter your full name"
+              placeholder="Enter your first name"
               required
-              value={formData.name}
+              value={formData.firstName}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Last Name Field */}
+          <div>
+            <label htmlFor="lastName" className="block text-sm font-medium">
+              Last Name
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Enter your last name"
+              required
+              value={formData.lastName}
               onChange={handleChange}
             />
           </div>

@@ -19,7 +19,9 @@ const Header = () => {
                 <User className="h-5 w-5" />
               </div>
               <div className="hidden md:block">
-                <div className="text-sm font-medium text-gray-900">{userInfo.name}</div>
+                <div className="text-sm font-medium text-gray-900">
+                  {userInfo.firstName} {userInfo.lastName}
+                </div>
                 <div className="text-xs text-gray-500">{userInfo.accountType}</div>
               </div>
             </div>

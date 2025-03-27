@@ -79,7 +79,7 @@ const Orders = () => {
 
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order.id === orderId ? { ...order, status: newStatus } : order
+          order.Id === orderId ? { ...order, status: newStatus } : order
         )
       );
     } catch (error) {

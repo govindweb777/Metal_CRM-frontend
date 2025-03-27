@@ -9,17 +9,26 @@ function Login() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post('http://localhost:5000/api/users/login', {
+      const { data } = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/auth/login`, {
         email,
         password,
       });
-      localStorage.setItem('userInfo', JSON.stringify(data));
+      
+      // Store user info with firstName and lastName
+      const userInfo = {
+        ...data.user,
+        fullName: `${data.user.firstName} ${data.user.lastName}`
+      };
+      
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      localStorage.setItem('token', data.token);
+      
       toast.success('Login successful!');
       navigate('/');
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed');
     }
   };
@@ -35,14 +44,13 @@ function Login() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email-address" className="sr-only">
+              <label htmlFor="email" className="sr-only">
                 Email address
               </label>
               <input
-                id="email-address"
+                id="email"
                 name="email"
                 type="email"
-                autoComplete="email"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
@@ -58,7 +66,6 @@ function Login() {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
@@ -85,4 +92,4 @@ function Login() {
   );
 }
 
-export default Login
+export default Login;
