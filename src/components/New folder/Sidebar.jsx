@@ -24,7 +24,6 @@ const Sidebar = () => {
       { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
       { name: 'User Management', icon: Users, path: '/user-management' },
       { name: 'Orders', icon: FileText, path: '/orders' },
-      { name: 'Leads', icon: UserPlus, path: '/leads' },
       { name: 'Customers', icon: Contact2, path: '/customers' },
       { name: 'Gallery', icon: Image, path: '/gallery' },
       { name: 'Work Queue', icon: ListTodo, path: '/work-queue' },
@@ -33,7 +32,6 @@ const Sidebar = () => {
     Admin: [
       { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
       { name: 'Orders', icon: FileText, path: '/orders' },
-      { name: 'Leads', icon: UserPlus, path: '/leads' },  
       { name: 'Customers', icon: Contact2, path: '/customers' },
       { name: 'Gallery', icon: Image, path: '/gallery' },
       { name: 'Work Queue', icon: ListTodo, path: '/work-queue' },
@@ -46,6 +44,7 @@ const Sidebar = () => {
       { name: 'Work Queue', icon: ListTodo, path: '/work-queue' }
     ],
     Display: [
+      { name: 'Orders', icon: FileText, path: '/orders' },
       { name: 'Work Queue', icon: ListTodo, path: '/work-queue' }
     ],
     Accounts: [

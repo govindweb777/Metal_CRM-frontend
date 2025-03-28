@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 import { X } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import Loader from './Loader';
 
 const CreateNewOrder = ({ onClose, addOrder }) => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [order, setOrder] = useState({
         customer: "",
         dimensions: "",
-        status: "New",  // Set default status to "New"
+        status: "New",
         assignedTo: "",
         image:[],
         imagePreview: null,
     });
 
-    // const handleChange = (e) => {
-    //     // console.log(`Field: ${e.target.name}, Value: ${e.target.value}`); 
-    //     setOrder({ ...order, [e.target.name]: e.target.value });
-    // };
+    const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
 
     const handleChange = (e) => {
       const { name, value } = e.target;
@@ -43,8 +43,7 @@ const CreateNewOrder = ({ onClose, addOrder }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        console.log("Final Order Before Submit:", order); // Debugging
+        setLoading(true);
 
         const formData = new FormData();
         formData.append("customer", order.customer);
@@ -62,10 +61,10 @@ const CreateNewOrder = ({ onClose, addOrder }) => {
                 return;
             }
 
-            const response = await fetch("http://localhost:3000/api/v1/admin/createOrder", {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/admin/createOrder`, {
                 method: "POST",
                 headers: {
-                    Authorization: `${token}`, // Fix template literal
+                    Authorization: `${token}`,
                 },
                 body: formData,
             });
@@ -77,23 +76,43 @@ const CreateNewOrder = ({ onClose, addOrder }) => {
 
             const result = await response.json();
             console.log("Order Created:", result);
-
-            // const newOrder = {
-            //     customer: result.order.customer || "Unknown",
-            //     dimensions: result.order.dimensions || "Not specified",
-            //     status: result.order.status || "New",
-            //     assignedTo: result.order.assignedTo || "Unassigned",
-            //     createdAt: result.order.createdAt || new Date().toISOString().split('T')[0],
-            //     image: result.order.image ? [result.order.image] : [],
-            // };
-
+    
             if (onClose) onClose();
-            navigate("/orders");
+            //navigate("/orders");
+            window.location.reload();
 
         } catch (error) {
             console.error("Error creating order:", error);
             alert(`Something went wrong: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
+    };
+
+    const fetchUsers = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/admin/getUsers`, {
+            method: "GET",
+            headers: { Authorization: `${token}` },
+          });
+    
+          if (!response.ok) throw new Error("Failed to fetch users");
+          const data = await response.json();
+    
+          const designers = data.users.filter(user => user.accountType === "Graphics Designer");
+          setUsers(designers);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
+    };
+     
+    const handleSelectUser = (selectedUser) => {
+        setOrder((prev) => ({
+          ...prev,
+          assignedTo: selectedUser.name,
+        }));
+        setFilteredUsers([]);
     };
 
     return (
@@ -116,30 +135,29 @@ const CreateNewOrder = ({ onClose, addOrder }) => {
                         className="w-full p-2 border rounded-md"
                         required
                     />
-
                     <input
                         type="text"
                         name="dimensions"
-                        placeholder="Dimensions (e.g. 100x150cm)"
+                        placeholder="Dimensions"
                         value={order.dimensions}
                         onChange={handleChange}
                         className="w-full p-2 border rounded-md"
                         required
                     />
-
                     <select
                         name="status"
                         value={order.status}
                         onChange={handleChange}
                         className="w-full p-2 border rounded-md"
                     >
-                        {["New", "InProgress", "PendingApproval", "Approved", "Completed", "Billed", "Paid"].map((status) => (
-                            <option key={status} value={status}>
-                                {status}
-                            </option>
-                        ))}
+                        <option value="New">New</option>
+                        <option value="InProgress">In Progress</option>
+                        <option value="PendingApproval">Pending Approval</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Billed">Billed</option>
+                        <option value="Paid">Paid</option>
                     </select>
-
                     <input
                         type="text"
                         name="assignedTo"
@@ -147,30 +165,44 @@ const CreateNewOrder = ({ onClose, addOrder }) => {
                         value={order.assignedTo}
                         onChange={handleChange}
                         className="w-full p-2 border rounded-md"
+                        required
                     />
-
-                    <label className="block text-gray-700 font-medium">Upload Image</label>
                     <input
                         type="file"
                         accept="image/*"
                         onChange={handleImageChange}
                         className="w-full p-2 border rounded-md"
                     />
-
                     {order.imagePreview && (
                         <img
                             src={order.imagePreview}
                             alt="Preview"
-                            className="w-full h-32 object-cover mt-2 rounded-md"
+                            className="w-full h-32 object-cover rounded-md"
                         />
                     )}
-
-                    <button
-                        type="submit"
-                        className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700"
-                    >
-                        Save Order
-                    </button>
+                    <div className="flex justify-end space-x-2">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-4 py-2 text-gray-600 hover:text-gray-900"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {loading ? (
+                                <div className="flex items-center">
+                                    <Loader />
+                                    <span className="ml-2">Creating...</span>
+                                </div>
+                            ) : (
+                                'Create Order'
+                            )}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

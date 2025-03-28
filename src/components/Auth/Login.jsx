@@ -104,9 +104,9 @@ const LoginForm = () => {
           </button>
         </div>
 
-        <div className="text-center text-sm">
+        {/* <div className="text-center text-sm">
           Don't have an account? <span className="text-blue-500 cursor-pointer" onClick={() => navigate("/signup")}>Sign up</span>
-        </div>
+        </div> */}
       </form>
     </div>
   );

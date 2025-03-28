@@ -14,6 +14,7 @@ import UserManagement from './pages/UserManagement';
 import Financial from './pages/Financial';
 import Sidebar2 from './components/New folder/Sidebar';
 import Settings from './pages/Settings';
+import EditOrder from './pages/EditOrder';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
                           <Route path="/user-management" element={<UserManagement />} />
                           <Route path="/financial" element={<Financial />} />
                           <Route path="/settings" element={<Settings />} />
+                          <Route path="/edit-order/:id" element={<EditOrder />} />
                         </Routes>
                       </main>
                     </div>
